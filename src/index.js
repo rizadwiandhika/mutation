@@ -2,9 +2,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
-import reportWebVitals from './reportWebVitals'
 import { ApolloProvider } from '@apollo/client'
-import client from './api/apollo-client'
+import client from './api/hasura-graphql'
+import reportWebVitals from './reportWebVitals'
 
 ReactDOM.render(
   <React.StrictMode>
