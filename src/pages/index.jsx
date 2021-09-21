@@ -11,7 +11,6 @@ import {
 
 import Activities from '../components/Activities/Avtivities'
 import Search from '../components/Seach/Search'
-
 export default function Index(props) {
   const [activities, setActivities] = useState([])
   const [inputActivity, setinputActivity] = useState('')
@@ -20,12 +19,14 @@ export default function Index(props) {
 
   const [getData, { data: lazyData, loading: lazyLoading, error: lazyError }] =
     useLazyQuery(GET_USERS_TODOS_BY_ID)
+
   const [
     mutationFunction,
     { data: mutationData, loading: mutationLoading, error: mutationError }
   ] = useMutation(UPDATE_TODO_STATUS_BY_ID)
 
   useEffect(() => {
+    console.log('effect lazy loading')
     if (!lazyData) return
 
     const todos = lazyData.todos.map((todo) => ({
@@ -39,6 +40,8 @@ export default function Index(props) {
   }, [lazyData])
 
   useEffect(() => {
+    console.log('effect mutation')
+
     if (!mutationData) return
     if (mutationError) console.error(mutationError)
 
@@ -69,9 +72,26 @@ export default function Index(props) {
     setIsOpen(false)
   }
 
+  /** Ekspektasi
+   * 1. mutation + setactivities -> rerender (mutationloading true, state activities berubah)
+   * 2. rerender (karena loading sudah selesai)
+   * 3. jananin useeffect mutation data
+   * 4. rerender
+   */
+
+  /** Yang terjadi (si useeffect lazy ikutan jalan ketika mutaion terjadi)
+   * 1. mutation + setactivities -> rerender (mutationloading true, state activities berubah)
+   * 2. rerender (karena loading sudah selesai)
+   * 3. render
+   * 4. jalanin useeffect lazy
+   * 5. rerender (dari useEffect lazy)
+   * 6. jananin useeffect mutation data
+   * 7. rerender (dari useeffect mutation)
+   */
+
   function handleToggleActivity(id) {
     const [act] = activities.filter((act) => act.id === id)
-    mutationFunction({ variables: { id, is_done: !act.finished } })
+    mutationFunction({ variables: { id: id, is_done: !act.finished } })
     setActivities((prev) =>
       prev.map((act) => (act.id === id ? { ...act, loading: true } : act))
     )
@@ -92,6 +112,8 @@ export default function Index(props) {
   function handleGetTodos() {
     getData({ variables: { id: inputUserId } })
   }
+
+  console.log('render...')
 
   return (
     <div className="w-10/12 max-w-screen-md mx-auto">
