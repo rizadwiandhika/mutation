@@ -25,24 +25,36 @@ class Home extends Component {
     })
   }
 
-  hapusPengunjung = (id) => {
-    this.setState({
-      data: [
-        ...this.state.data.filter((item) => {
-          return item.id !== id
-        })
-      ]
-    })
+  hapusPengunjung = async (id) => {
+    console.log(id)
+    try {
+      await this.props.deleteAnggotaById({ variables: { id } })
+      this.setState({
+        data: [
+          ...this.state.data.filter((item) => {
+            return item.id !== id
+          })
+        ]
+      })
+    } catch (error) {
+      console.error(error)
+    }
   }
 
-  tambahPengunjung = (newUser) => {
-    const newData = {
-      id: uuidv4(),
-      ...newUser
+  tambahPengunjung = async (newUser) => {
+    const { nama, umur, jenisKelamin: jenis_kelamin } = newUser
+    const newData = { nama, umur, jenis_kelamin }
+    try {
+      await this.props.insertOneAnggota({ variables: { data: newData } })
+      const result = this.props.insertOneResult.data.insert_anggota_one
+      const user = { ...result, jenisKelamin: result.jenis_kelamin }
+
+      this.setState({
+        data: [...this.state.data, user]
+      })
+    } catch (error) {
+      console.error(error)
     }
-    this.setState({
-      data: [...this.state.data, newData]
-    })
   }
 
   render() {
@@ -57,7 +69,11 @@ class Home extends Component {
               data={this.state.data}
               hapusPengunjung={this.hapusPengunjung}
             />
-            <PassengerInput tambahPengunjung={this.tambahPengunjung} />
+            {this.props.insertOneResult.loading ? (
+              <h3>insert loading...</h3>
+            ) : (
+              <PassengerInput tambahPengunjung={this.tambahPengunjung} />
+            )}
           </div>
         )}
 
@@ -71,7 +87,7 @@ class Home extends Component {
         >
           Cari
         </button>
-        <p>{null}</p>
+
         {this.props.lazy.loading && <h1>Fetching user's data id...</h1>}
         {this.props.lazy.error && <h1>Error fetching user's data :(</h1>}
         {this.props.lazy.data && (

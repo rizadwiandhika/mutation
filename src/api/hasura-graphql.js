@@ -34,10 +34,9 @@ export const GET_ANGGOTA = gql`
 
 // Tanda seru pada "$id: Int!" artinya saat passing variable "id", nilainya GA BOLEH NULL
 export const GET_ANGGOTA_BY_ID = gql`
-  mutation ADD_ANGGOTA($jenisKelamin: String!, $nama: String!, $umur: Int!) {
-    insert_anggota_one(
-      object: { jenis_kelamin: $jenisKelamin, nama: $nama, umur: $umur }
-    ) {
+  query MyQuery($id: Int!) {
+    anggota_by_pk(id: $id) {
+      id
       jenis_kelamin
       nama
       umur
@@ -48,7 +47,6 @@ export const GET_ANGGOTA_BY_ID = gql`
         pelajaran
         status
       }
-      id
     }
   }
 `
