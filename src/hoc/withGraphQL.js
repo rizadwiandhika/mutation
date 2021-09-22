@@ -5,7 +5,8 @@ import {
   GET_ANGGOTA,
   GET_ANGGOTA_BY_ID,
   INSERT_ONE_ANGGOTA,
-  DELETE_ANGGOTA_BY_ID
+  DELETE_ANGGOTA_BY_ID,
+  UPDATE_ANGGOTA
 } from '../api/hasura-graphql'
 
 export default function withGraphQL(Component) {
@@ -14,6 +15,7 @@ export default function withGraphQL(Component) {
     const [lazyGetData, lazy] = useLazyQuery(GET_ANGGOTA_BY_ID)
     const [insertOneAnggota, insertOneResult] = useMutation(INSERT_ONE_ANGGOTA)
     const [deleteAnggotaById, deleteAnggota] = useMutation(DELETE_ANGGOTA_BY_ID)
+    const [updateAnggotaById, updateAnggota] = useMutation(UPDATE_ANGGOTA)
 
     return (
       <Component
@@ -26,6 +28,8 @@ export default function withGraphQL(Component) {
         insertOneResult={insertOneResult}
         deleteAnggotaById={deleteAnggotaById}
         deleteAnggota={deleteAnggota}
+        updateAnggotaById={updateAnggotaById}
+        updateAnggota={updateAnggota}
         {...props}
       />
     )

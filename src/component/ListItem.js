@@ -3,7 +3,7 @@ const ListItem = (props) => {
   const { id, nama, umur, jenisKelamin } = props.data
 
   return (
-    <tr>
+    <tr onClick={() => props.openEdit(id)} style={{ cursor: 'pointer' }}>
       <td>{nama}</td>
       <td>{umur}</td>
       <td>{jenisKelamin}</td>

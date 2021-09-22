@@ -87,11 +87,20 @@ export const DELETE_ANGGOTA_BY_ID = gql`
 `
 
 export const UPDATE_ANGGOTA = gql`
-  mutation ADD_ANGGOTA($data: anggota_insert_input!) {
-    insert_anggota_one(object: $data) {
-      jenis_kelamin
+  mutation MyMutation2(
+    $id: Int!
+    $nama: String!
+    $umur: Int!
+    $jenis_kelamin: String!
+  ) {
+    update_anggota_by_pk(
+      pk_columns: { id: $id }
+      _set: { nama: $nama, umur: $umur, jenis_kelamin: $jenis_kelamin }
+    ) {
+      id
       nama
       umur
+      jenis_kelamin
       keterangans {
         id
         id_anggota
@@ -99,7 +108,6 @@ export const UPDATE_ANGGOTA = gql`
         pelajaran
         status
       }
-      id
     }
   }
 `

@@ -3,13 +3,21 @@ import { v4 as uuidv4 } from 'uuid'
 import PassengerInput from './PassengerInput'
 import ListPassenger from './ListPassenger'
 import Header from './Header'
+import Edit from './Edit'
 
 import withGraphQL from '../hoc/withGraphQL'
 
 class Home extends Component {
   state = {
     data: [],
-    input: ''
+    input: '',
+    showEditing: false,
+    edit: {
+      id: '',
+      nama: '',
+      umur: '',
+      jenisKelamin: 'Pria'
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -57,6 +65,47 @@ class Home extends Component {
     }
   }
 
+  openEdit = (id) => {
+    if (id === this.state.edit.id) return
+
+    const [selectedPengunjung] = this.state.data.filter((v) => v.id === id)
+    this.setState({
+      showEditing: true,
+      edit: { ...selectedPengunjung }
+    })
+  }
+
+  onChangeEdit = (e) => {
+    const { name, value } = e.target
+    this.setState((state, props) => {
+      return { edit: { ...state.edit, [name]: value } }
+    })
+  }
+
+  editPengunjung = async (e) => {
+    e.preventDefault()
+    const { id, jenisKelamin: jenis_kelamin, nama, umur } = this.state.edit
+
+    try {
+      await this.props.updateAnggotaById({
+        variables: { id, jenis_kelamin, nama, umur }
+      })
+
+      const result = this.props.updateAnggota.data.update_anggota_by_pk
+      const user = { ...result, jenisKelamin: result.jenis_kelamin }
+
+      this.setState((state, props) => {
+        const updatedUser = state.data.map((p) => {
+          return p.id === user.id ? user : p
+        })
+
+        return { data: updatedUser, showEditing: false }
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   render() {
     return (
       <>
@@ -66,6 +115,7 @@ class Home extends Component {
           <div>
             <Header />
             <ListPassenger
+              openEdit={this.openEdit}
               data={this.state.data}
               hapusPengunjung={this.hapusPengunjung}
             />
@@ -76,6 +126,21 @@ class Home extends Component {
             )}
           </div>
         )}
+
+        {this.state.showEditing && (
+          <>
+            <br />
+            <br />
+            <Edit
+              {...this.state.edit}
+              onSubmit={this.editPengunjung}
+              onChangeInput={this.onChangeEdit}
+            />
+          </>
+        )}
+
+        <br />
+        <br />
 
         <input
           value={this.state.input}

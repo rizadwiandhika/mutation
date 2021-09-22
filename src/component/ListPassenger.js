@@ -14,6 +14,7 @@ const ListPassenger = (props) => {
         <tbody>
           {props.data.map((item) => (
             <ListItem
+              openEdit={props.openEdit}
               key={item.id}
               data={item}
               hapusPengunjung={props.hapusPengunjung}
